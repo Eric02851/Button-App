@@ -1,9 +1,9 @@
 import io from "socket.io-client";
 const socket = io("http://localhost:420");
 
-function Form(props) {
+function Button(props) {
     const onClick = () =>{
-        socket.emit('message', "test");
+        socket.emit('click');
         console.log("Works")
     }
 
@@ -11,14 +11,7 @@ function Form(props) {
 }
   
 function App() {
-    //socket.emit('chat message', "test");
-    console.log("ran")
-
-    return (
-        <div>
-        <Form />
-        </div>
-    )
+    return (<Button />)
 }
 
 export default App;
