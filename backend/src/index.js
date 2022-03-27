@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const server = http.createServer(app)
-const io = require('socket.io')(server, {cors: {origin: "*"}});
+const io = require('socket.io')(server, {cors: {origin: "*"}})
 
 let log = {}
 
@@ -27,6 +27,9 @@ io.on('connection', (socket) => {
         console.log(log)
     })
 })
+
+broadcastData = () => {io.emit('data', log)}
+setInterval(broadcastData, 100)
 
 server.listen(420, () => {
     console.log('listening')
