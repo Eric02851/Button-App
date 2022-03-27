@@ -1,19 +1,11 @@
-jsonObj = {}
+testArray = ["Hello"]
 
-jsonObj.test = "lol"
+testArray.push("World")
 
-console.log(jsonObj)
-
-console.log()
-
-jsonObj.test = "lmao"
-
-console.log(jsonObj)
-
-if (jsonObj["LOL"] == undefined) {
-    console.log(true)
+for(i in testArray){
+    console.log(testArray[i])
 }
 
-else {
-    console.log(false)
+for (let i = 0; i < 6; i++){
+    console.log(i)
 }
