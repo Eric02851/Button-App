@@ -1,7 +1,6 @@
 import React from 'react'
 import io from "socket.io-client"
 const socket = io("http://localhost:420")
-
 //socket.on('data', (data) => {console.log(data)})
 
 function Button() {
@@ -15,20 +14,18 @@ function Button() {
 function Table(props) {
     let rows = [
         <tr key="0">
-            <th>Name</th>
+            <th>IPV6</th>
             <th>Count</th>
         </tr>
     ]
     
-    let id = 1
-    for (let key in props.tableData){
+    for (let i = 0; i < props.tableData.length; i++){
         rows.push(
-            <tr key={id.toString()}>
-                <td>{key}</td>
-                <td>{props.tableData[key]}</td>
+            <tr key={String(i ++)}>
+                <td>{props.tableData[i][0]}</td>
+                <td>{props.tableData[i][1]}</td>
             </tr>
         )
-        id ++
     }
 
     return (
