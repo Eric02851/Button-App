@@ -21,7 +21,7 @@ function Table(props) {
     
     for (let i = 0; i < props.tableData.length; i++){
         rows.push(
-            <tr key={String(i ++)}>
+            <tr key={String(i+1)}>
                 <td>{props.tableData[i][0]}</td>
                 <td>{props.tableData[i][1]}</td>
             </tr>
@@ -41,12 +41,15 @@ class LiveTable extends React.Component {
     constructor(props) {
         //try awaiting socket.on('data', (data) => {console.log(data)})
         super(props);
-        this.state = {tableData: {}};
+        this.state = {tableData: []};
     }
     
     componentDidMount() {
         socket.on('data', (data) => {
-            this.setState({tableData: data})
+            if (JSON.stringify(data) != JSON.stringify(this.state.tableData)){
+                this.setState({tableData: data})
+                console.log("updated")
+            }
         })
       }
   
