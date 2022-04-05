@@ -5,6 +5,7 @@ const server = http.createServer(app)
 const io = require('socket.io')(server, {cors: {origin: "*"}})
 
 let log = []
+let indexes = {}
 
 app.get('/', (req, res) => {
     res.send('Hello World')
@@ -12,20 +13,33 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     let ip = socket.request.connection.remoteAddress
-    let index = -1;
-    
+
     for (let i = 0; i < log.length; i++) {
-        if (log[i][0] == ip) {index = i; break}
+        if (log[i][0] == ip) {indexes[ip] = i; break}
     }
-    if (index == -1) {
+    if (indexes[ip] == undefined){
+        indexes[ip] = log.length
         log.push([ip, 0])
-        index = log.length - 1
     }
+
     console.log(`connected: ${ip}`)
 
     socket.on('click', () => {
-        log[index][1] ++
+        log[indexes[ip]][1] ++
+
+        if (indexes[ip] != 0){
+            if (log[indexes[ip]][1] > log[indexes[ip]-1][1]){
+                let tmp = log[indexes[ip]-1]
+                log[indexes[ip]-1] = log[indexes[ip]]
+                log[indexes[ip]] = tmp
+                
+                indexes[ip] --
+                indexes[tmp[0]] ++
+            }
+        }
+
         console.log(log)
+        console.log(indexes)
     })
     socket.on('disconnect', () => {console.log(`disconnected: ${ip}`)})
 })
