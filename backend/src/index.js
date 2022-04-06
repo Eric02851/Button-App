@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {console.log(`disconnected: ${ip}`)})
 })
 
-broadcastData = () => {io.emit('data', log)}
+const broadcastData = () => {io.emit('data', log)}
 setInterval(broadcastData, 15.625)
 
 server.listen(420, () => {
