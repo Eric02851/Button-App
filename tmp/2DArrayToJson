@@ -1,0 +1,48 @@
+
+/*
+let array = [["Eric", 500], ["Sydney", 250], ["Gio", 10], ["Josh", 0]]
+let array2 = []
+let objectLiteral = {}
+
+for (let i in array){
+    objectLiteral[array[i][0]] = array[i][1]
+}
+
+//console.log(objectLiteral)
+
+for (let key in objectLiteral) {
+    array2[array2.length] = [key, objectLiteral[key]]
+}
+console.log(array)
+console.log(array2)
+*/
+
+/*
+let literalInArray = [{Eric: 50}]
+let array = []
+
+
+for (let i in literalInArray) {
+    let ip = Object.keys(literalInArray[i])[0]
+    array.push([ip, literalInArray[i][ip]])
+}
+
+console.log(array)
+*/
+
+/*
+let array = [["Eric", 500], ["Sydney", 250], ["Gio", 10], ["Josh", 0]]
+let objectLiteral = {}
+
+for (let i in array){
+    objectLiteral[array[i][0]] = array[i][1]
+}
+
+console.log(objectLiteral)
+*/
+
+const objLiteral = {
+    Eric: 0
+}
+
+console.log(objLiteral.length)

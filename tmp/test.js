@@ -1,11 +1,6 @@
-testArray = ["Hello"]
 
-testArray.push("World")
+data = []
 
-for(i in testArray){
-    console.log(testArray[i])
-}
-
-for (let i = 0; i < 6; i++){
-    console.log(i)
+if (JSON.stringify(data) !== "[]"){
+    console.log(true)
 }

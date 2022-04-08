@@ -3,9 +3,11 @@ const app = express()
 const http = require('http')
 const server = http.createServer(app)
 const io = require('socket.io')(server, {cors: {origin: "*"}})
+const mongo = require('mongodb').MongoClient
 
-let log = []
-let indexes = {}
+let userData = []
+let index = {}
+let collection
 
 app.get('/', (req, res) => {
     res.send('Hello World')
@@ -13,40 +15,82 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
     let ip = socket.request.connection.remoteAddress
-
-    for (let i = 0; i < log.length; i++) {
-        if (log[i][0] == ip) {indexes[ip] = i; break}
-    }
-    if (indexes[ip] == undefined){
-        indexes[ip] = log.length
-        log.push([ip, 0])
-    }
-
     console.log(`connected: ${ip}`)
+    if (index[ip] == undefined){
+        index[ip] = userData.length
+        userData.push([ip, 0])
+    }
 
     socket.on('click', () => {
-        log[indexes[ip]][1] ++
+        userData[index[ip]][1] ++
 
-        if (indexes[ip] != 0){
-            if (log[indexes[ip]][1] > log[indexes[ip]-1][1]){
-                let tmp = log[indexes[ip]-1]
-                log[indexes[ip]-1] = log[indexes[ip]]
-                log[indexes[ip]] = tmp
+        if (index[ip] != 0){
+            if (userData[index[ip]][1] > userData[index[ip]-1][1]) {
+                let tmp = userData[index[ip]-1]
+                userData[index[ip]-1] = userData[index[ip]]
+                userData[index[ip]] = tmp
                 
-                indexes[ip] --
-                indexes[tmp[0]] ++
+                index[ip] --
+                index[tmp[0]] ++
             }
         }
 
-        console.log(log)
-        console.log(indexes)
+        console.log(userData)
+        console.log(index)
     })
+
     socket.on('disconnect', () => {console.log(`disconnected: ${ip}`)})
 })
 
-const broadcastData = () => {io.emit('data', log)}
-setInterval(broadcastData, 15.625)
+const broadcastData = () => {io.emit('data', userData)}
 
-server.listen(420, () => {
-    console.log('listening')
-})
+const loadData = async () => {
+    const client = await mongo.connect('mongodb://127.0.0.1:27017')
+    collection = client.db('buttonApp').collection('userData')
+
+    let data = await collection.find().toArray()
+    data = data[0]
+
+    if (data != undefined) {
+        delete data._id
+        for (let i in data) {
+            console.log(i)
+            userData.push([i, data[i]])
+        }
+    }
+}
+
+const indexData = () => {
+    for (let i in userData) {
+        index[userData[i][0]] = parseInt(i)
+    }
+}
+
+const logData = async () => {
+    let userDataLiteral = {}
+    for (let i in userData) {
+        userDataLiteral[userData[i][0]] = userData[i][1]
+    }
+
+    console.log(userDataLiteral)
+
+    await collection.deleteMany({})
+    await collection.insertOne(userDataLiteral)
+    console.log("Logged User Data")
+}
+
+const main = async () => {
+    await loadData()
+    indexData()
+    //console.log(userData)
+    //console.log(index)
+
+    setInterval(broadcastData, 15.625)
+    setInterval(logData, 5000)
+    
+    server.listen(420, () => {
+        console.log('listening')
+    })
+}
+
+main()
