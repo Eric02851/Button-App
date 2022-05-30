@@ -1,6 +1,6 @@
 import React from 'react'
 import io from "socket.io-client"
-const socket = io("http://localhost:420")
+const socket = io("http://localhost:80")
 //socket.on('data', (data) => {console.log(data)})
 
 function Button() {

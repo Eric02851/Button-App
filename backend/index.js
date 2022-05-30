@@ -79,15 +79,9 @@ const logData = async () => {
 const main = async () => {
     await loadData()
     indexData()
-    //console.log(userData)
-    //console.log(index)
 
     setInterval(broadcastData, 15.625)
     setInterval(logData, 5000)
-
-    server.listen(420, '::', () => {
-        console.log('listening')
-    })
 
     server.listen(80, '::')
 }
