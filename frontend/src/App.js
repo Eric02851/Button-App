@@ -18,7 +18,7 @@ function Table(props) {
             <th>Count</th>
         </tr>
     ]
-    
+
     for (let i = 0; i < props.tableData.length; i++){
         rows.push(
             <tr key={String(i+1)}>
@@ -43,7 +43,7 @@ class LiveTable extends React.Component {
         super(props);
         this.state = {tableData: []};
     }
-    
+
     componentDidMount() {
         socket.on('data', (data) => {
             if (JSON.stringify(data) != JSON.stringify(this.state.tableData)){
@@ -52,12 +52,12 @@ class LiveTable extends React.Component {
             }
         })
       }
-  
+
     render() {
         return (<Table tableData={this.state.tableData} />)
     }
   }
-  
+
 function App() {
     return (
         <div>

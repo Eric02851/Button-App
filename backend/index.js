@@ -1,17 +1,14 @@
-const express = require('express')
-const app = express()
 const http = require('http')
-const server = http.createServer(app)
-const io = require('socket.io')(server, {cors: {origin: "*"}})
+const static = require('node-static');
 const mongo = require('mongodb').MongoClient
+
+const build = new(static.Server)(__dirname.split('backend')[0] + 'frontend/build')
+const server = http.createServer(function (req, res) {build.serve(req, res)})
+const io = require('socket.io')(server, {cors: {origin: "*"}})
 
 let userData = []
 let index = {}
 let collection
-
-app.get('/', (req, res) => {
-    res.send('Hello World')
-})
 
 io.on('connection', (socket) => {
     let ip = socket.request.connection.remoteAddress
@@ -29,7 +26,7 @@ io.on('connection', (socket) => {
                 let tmp = userData[index[ip]-1]
                 userData[index[ip]-1] = userData[index[ip]]
                 userData[index[ip]] = tmp
-                
+
                 index[ip] --
                 index[tmp[0]] ++
             }
@@ -87,10 +84,12 @@ const main = async () => {
 
     setInterval(broadcastData, 15.625)
     setInterval(logData, 5000)
-    
-    server.listen(420, () => {
+
+    server.listen(420, '::', () => {
         console.log('listening')
     })
+
+    server.listen(80, '::')
 }
 
 main()
