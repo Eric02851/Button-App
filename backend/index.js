@@ -2,9 +2,9 @@ const http = require('http')
 const static = require('node-static');
 const mongo = require('mongodb').MongoClient
 
-const build = new(static.Server)(__dirname.split('backend')[0] + 'frontend/build')
-const server = http.createServer(function (req, res) {build.serve(req, res)})
-const io = require('socket.io')(server, {cors: {origin: "*"}})
+const build = new (static.Server)(__dirname.split('backend')[0] + 'frontend/build')
+const server = http.createServer(function (req, res) { build.serve(req, res) })
+const io = require('socket.io')(server, { cors: { origin: "*" } })
 
 let userData = []
 let index = {}
@@ -13,33 +13,45 @@ let collection
 io.on('connection', (socket) => {
     let ip = socket.request.connection.remoteAddress
     console.log(`connected: ${ip}`)
-    if (index[ip] == undefined){
+    if (index[ip] == undefined) {
         index[ip] = userData.length
-        userData.push([ip, 0])
+        userData.push([ip, 0, ip])
     }
 
     socket.on('click', () => {
-        userData[index[ip]][1] ++
+        userData[index[ip]][1]++
 
-        if (index[ip] != 0){
-            if (userData[index[ip]][1] > userData[index[ip]-1][1]) {
-                let tmp = userData[index[ip]-1]
-                userData[index[ip]-1] = userData[index[ip]]
+        if (index[ip] != 0) {
+            if (userData[index[ip]][1] > userData[index[ip] - 1][1]) {
+                let tmp = userData[index[ip] - 1]
+                userData[index[ip] - 1] = userData[index[ip]]
                 userData[index[ip]] = tmp
 
-                index[ip] --
-                index[tmp[0]] ++
+                index[ip]--
+                index[tmp[0]]++
             }
         }
 
         console.log(userData)
-        console.log(index)
+        //console.log(index)
     })
 
-    socket.on('disconnect', () => {console.log(`disconnected: ${ip}`)})
+    socket.on('idUpdate', (id) => {
+        id = String(id)
+        if (!id || id.length > 39) {
+            userData[index[ip]][2] = ip
+            console.log(userData)
+            return
+        }
+
+        userData[index[ip]][2] = id
+        console.log(userData)
+    })
+
+    socket.on('disconnect', () => { console.log(`disconnected: ${ip}`) })
 })
 
-const broadcastData = () => {io.emit('data', userData)}
+const broadcastData = () => { io.emit('data', userData) }
 
 const loadData = async () => {
     const client = await mongo.connect('mongodb://127.0.0.1:27017')
@@ -77,11 +89,11 @@ const logData = async () => {
 }
 
 const main = async () => {
-    await loadData()
-    indexData()
+    //await loadData()
+    //indexData()
 
     setInterval(broadcastData, 15.625)
-    setInterval(logData, 5000)
+    //setInterval(logData, 5000)
 
     server.listen(80, '::')
 }
